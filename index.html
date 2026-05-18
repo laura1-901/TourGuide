@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>YourTourGuide - Luzern</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f4f4;
+    color:#333;
+}
+
+header{
+    background:#0a4d68;
+    color:white;
+    padding:30px;
+    text-align:center;
+}
+
+.container{
+    width:90%;
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2{
+    color:#0a4d68;
+}
+
+button{
+    background:#088395;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#065a60;
+}
+
+select{
+    padding:10px;
+    margin:10px 0;
+    width:100%;
+}
+
+.plan-item{
+    border-left:5px solid #088395;
+    padding-left:15px;
+    margin-bottom:20px;
+}
+
+img{
+    width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.footer{
+    text-align:center;
+    padding:20px;
+    background:#0a4d68;
+    color:white;
+    margin-top:40px;
+}
+
+.route{
+    background:#eef7fa;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>YourTourGuide</h1>
+    <p>Plane deinen perfekten Aufenthalt in Luzern</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Reise konfigurieren</h2>
+
+        <label>Anzahl Tage:</label>
+        <select id="days">
+            <option value="1">1 Tag</option>
+            <option value="2">2 Tage</option>
+            <option value="3">3 Tage</option>
+        </select>
+
+        <label>Interesse:</label>
+        <select id="interest">
+            <option value="culture">Kultur</option>
+            <option value="nature">Natur</option>
+            <option value="family">Familie</option>
+            <option value="view">Aussicht</option>
+            <option value="shopping">Shopping</option>
+        </select>
+
+        <button onclick="generatePlan()">Reiseplan erstellen</button>
+        <button onclick="downloadPDF()">Als PDF speichern</button>
+    </div>
+
+    <div id="plan"></div>
+
+</div>
+
+<div class="footer">
+    © 2026 YourTourGuide - Luzern
+</div>
+
+<script>
+
+const attractions = {
+
+culture: [
+{
+time:"09:00",
+name:"Kapellbrücke",
+info:"Die berühmteste Holzbrücke der Schweiz.",
+price:"Kostenlos",
+transport:"Zu Fuss ab Bahnhof Luzern (5 Min)",
+image:"https://images.unsplash.com/photo-1527668752968-14dc70a27c95?q=80&w=1200&auto=format&fit=crop"
+},
+{
+time:"11:00",
+name:"Altstadt Luzern",
+info:"Historische Gassen und bemalte Häuser.",
+price:"Kostenlos",
+transport:"Direkt neben der Kapellbrücke",
+image:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop"
+},
+{
+time:"14:00",
+name:"Verkehrshaus",
+info:"Beliebtes Schweizer Museum für Verkehr.",
+price:"CHF 35",
+transport:"Bus Nr. 6 oder 8",
+image:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop"
+}
+],
+
+nature: [
+{
+time:"08:30",
+name:"Pilatus",
+info:"Atemberaubender Berg mit Panorama.",
+price:"CHF 72",
+transport:"Zug + Zahnradbahn",
+image:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+},
+{
+time:"13:00",
+name:"Vierwaldstättersee",
+info:"Entspannende Schiffsfahrt.",
+price:"CHF 30",
+transport:"Ab Luzern Bahnhofquai",
+image:"https://images.unsplash.com/photo-1493246318656-5bfd4cfb29b8?q=80&w=1200&auto=format&fit=crop"
+}
+],
+
+family: [
+{
+time:"10:00",
+name:"Verkehrshaus",
+info:"Interaktive Ausstellungen für Familien.",
+price:"CHF 35",
+transport:"Bus Nr. 6",
+image:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop"
+},
+{
+time:"15:00",
+name:"Seepromenade",
+info:"Spaziergang und Spielplätze am See.",
+price:"Kostenlos",
+transport:"Zu Fuss",
+image:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop"
+}
+],
+
+view: [
+{
+time:"09:00",
+name:"Rigi",
+info:"Die Königin der Berge.",
+price:"CHF 78",
+transport:"Schiff + Bahn",
+image:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+}
+],
+
+shopping: [
+{
+time:"10:00",
+name:"Hertensteinstrasse",
+info:"Shoppingmeile im Zentrum.",
+price:"Individuell",
+transport:"Zu Fuss",
+image:"https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop"
+}
+]
+
+};
+
+function generatePlan(){
+
+    const interest = document.getElementById("interest").value;
+    const days = document.getElementById("days").value;
+
+    const planDiv = document.getElementById("plan");
+    planDiv.innerHTML = "";
+
+    for(let d=1; d<=days; d++){
+
+        let dayCard = document.createElement("div");
+        dayCard.className = "card";
+
+        dayCard.innerHTML += `<h2>Tag ${d}</h2>`;
+
+        attractions[interest].forEach(place => {
+
+            dayCard.innerHTML += `
+                <div class="plan-item">
+                    <h3>${place.time} - ${place.name}</h3>
+
+                    <p>${place.info}</p>
+
+                    <div class="route">
+                        <strong>Preis:</strong> ${place.price}<br>
+                        <strong>ÖV:</strong> ${place.transport}
+                    </div>
+
+                    <img src="${place.image}" alt="${place.name}">
+                </div>
+            `;
+        });
+
+        planDiv.appendChild(dayCard);
+    }
+}
+
+function downloadPDF(){
+    window.print();
+}
+
+</script>
+
+</body>
+</html>
