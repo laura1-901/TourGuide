@@ -1,403 +1,1160 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourTourGuide Luzern</title>
+
+<title>YourTourGuide - Luzern Reiseplaner</title>
 
 <style>
+
+:root{
+    --primary:#0b6efd;
+    --secondary:#00b4d8;
+    --light:#f5fbff;
+    --dark:#1f2937;
+    --success:#2e8b57;
+    --gold:#ffd166;
+    --card:#ffffff;
+}
+
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
 }
 
 body{
-background:#f5f7fa;
-color:#333;
+    background:linear-gradient(
+        180deg,
+        #dff6ff 0%,
+        #ffffff 40%,
+        #f8fbff 100%
+    );
+    color:var(--dark);
+    min-height:100vh;
 }
 
-header{
-background:linear-gradient(135deg,#0077b6,#00b4d8);
-color:white;
-padding:30px;
-text-align:center;
-box-shadow:0 3px 10px rgba(0,0,0,0.2);
+/* ===========================
+HEADER
+=========================== */
+
+.hero{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+    color:white;
+    text-align:center;
+    padding:60px 20px 120px;
 }
 
-header h1{
-font-size:2.5rem;
-margin-bottom:10px;
+.hero h1{
+    font-size:3rem;
+    margin-bottom:10px;
 }
+
+.hero p{
+    font-size:1.1rem;
+    opacity:.95;
+}
+
+/* Berge */
+
+.mountains{
+    position:absolute;
+    bottom:25px;
+    width:100%;
+    text-align:center;
+    font-size:40px;
+    opacity:.35;
+}
+
+/* See */
+
+.lake{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    text-align:center;
+    font-size:22px;
+    opacity:.85;
+}
+
+/* ===========================
+CONTAINER
+=========================== */
 
 .container{
-max-width:1100px;
-margin:auto;
-padding:20px;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
 }
 
-.card{
-background:white;
-padding:20px;
-border-radius:15px;
-margin-bottom:20px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
+.control-panel{
+    background:white;
+    margin-top:-70px;
+    position:relative;
+    z-index:10;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
 }
 
 label{
-display:block;
-margin-top:15px;
-font-weight:bold;
+    font-weight:600;
+    margin-bottom:6px;
 }
 
 select{
-width:100%;
-padding:10px;
-margin-top:5px;
-border-radius:8px;
-border:1px solid #ccc;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #d1d5db;
+    font-size:15px;
+}
+
+.button-row{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
 button{
-margin-top:20px;
-padding:12px 20px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-size:16px;
+    border:none;
+    cursor:pointer;
+    padding:14px 20px;
+    border-radius:12px;
+    font-size:15px;
+    transition:.3s;
 }
 
-.generate{
-background:#0096c7;
-color:white;
+.generate-btn{
+    background:var(--primary);
+    color:white;
 }
 
-.pdf{
-background:#38b000;
-color:white;
-margin-left:10px;
+.generate-btn:hover{
+    background:#0856d8;
 }
 
-.day{
-margin-top:25px;
-padding:20px;
-background:#eef8ff;
-border-left:6px solid #0096c7;
-border-radius:10px;
+.pdf-btn{
+    background:var(--success);
+    color:white;
+}
+
+.pdf-btn:hover{
+    background:#256f46;
+}
+
+/* ===========================
+SUMMARY
+=========================== */
+
+.summary{
+    margin-top:25px;
+    display:none;
+}
+
+.summary-card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+    margin-top:15px;
+}
+
+.stat{
+    background:var(--light);
+    padding:15px;
+    border-radius:14px;
+}
+
+.stat h3{
+    color:var(--primary);
+    margin-bottom:5px;
+}
+
+/* ===========================
+DAY PLAN
+=========================== */
+
+.day-card{
+    background:white;
+    margin-top:25px;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.day-header{
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+    color:white;
+    padding:18px;
+}
+
+.day-body{
+    padding:20px;
 }
 
 .activity{
-margin-top:10px;
-padding:12px;
-background:white;
-border-radius:8px;
+    border-left:5px solid var(--primary);
+    background:#f9fbff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:12px;
 }
 
-.activity h4{
-color:#0077b6;
-margin-bottom:5px;
+.activity:last-child{
+    margin-bottom:0;
 }
+
+.activity-title{
+    font-size:18px;
+    color:var(--primary);
+    margin-bottom:8px;
+}
+
+.activity-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:10px;
+    margin-top:10px;
+}
+
+.info-box{
+    background:white;
+    border-radius:10px;
+    padding:10px;
+    border:1px solid #e5e7eb;
+}
+
+/* ===========================
+DECORATION
+=========================== */
+
+.lucerne-banner{
+    margin-top:25px;
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.lucerne-banner h2{
+    color:var(--primary);
+    margin-bottom:10px;
+}
+
+.landmarks{
+    font-size:30px;
+    letter-spacing:8px;
+}
+
+/* ===========================
+FOOTER
+=========================== */
 
 footer{
-text-align:center;
-padding:20px;
-color:#666;
+    margin-top:50px;
+    padding:30px;
+    text-align:center;
+    color:#64748b;
 }
 
+/* ===========================
+PRINT / PDF
+=========================== */
+
 @media print{
-button,
-header{
-display:none;
+
+.hero,
+.control-panel button,
+footer{
+    display:none;
 }
 
 body{
-background:white;
+    background:white;
 }
+
+.day-card,
+.summary-card{
+    box-shadow:none;
+    border:1px solid #ddd;
 }
+
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.hero h1{
+    font-size:2.2rem;
+}
+
+.mountains{
+    font-size:28px;
+}
+
+}
+
 </style>
 </head>
+
 <body>
 
-<header>
-<h1>🧭 YourTourGuide</h1>
-<p>Plane deinen perfekten Aufenthalt in Luzern</p>
+<header class="hero">
+
+    <h1>🧭 YourTourGuide</h1>
+
+    <p>
+        Plane deinen perfekten Aufenthalt in Luzern
+        mit individuellen Tagesrouten.
+    </p>
+
+    <div class="mountains">
+        ⛰️ ⛰️ ⛰️ ⛰️ ⛰️
+    </div>
+
+    <div class="lake">
+        🌊 🌊 🌊 🌊 🌊 🌊 🌊
+    </div>
+
 </header>
 
 <div class="container">
 
-<div class="card">
+<div class="control-panel">
 
-<label>Anzahl Tage</label>
-<select id="days">
-<option value="1">1 Tag</option>
-<option value="2">2 Tage</option>
-<option value="3">3 Tage</option>
-<option value="4">4 Tage</option>
-<option value="5">5 Tage</option>
-</select>
+    <div class="grid">
 
-<label>Kategorie</label>
-<select id="category">
-<option value="natur">🌲 Natur</option>
-<option value="familie">👨‍👩‍👧‍👦 Familie</option>
-<option value="einzel">🚶 Einzelperson</option>
-</select>
+        <div class="form-group">
+            <label>📅 Aufenthaltstage</label>
 
-<label>Wetter</label>
-<select id="weather">
-<option value="gut">☀️ Gut</option>
-<option value="schlecht">🌧️ Schlecht</option>
-</select>
+            <select id="days">
+                <option value="1">1 Tag</option>
+                <option value="2">2 Tage</option>
+                <option value="3">3 Tage</option>
+                <option value="4">4 Tage</option>
+                <option value="5">5 Tage</option>
+                <option value="6">6 Tage</option>
+                <option value="7">7 Tage</option>
+            </select>
+        </div>
 
-<button class="generate" onclick="generatePlan()">
-Reiseplan erstellen
-</button>
+        <div class="form-group">
+            <label>🎯 Kategorie</label>
 
-<button class="pdf" onclick="window.print()">
-📄 PDF herunterladen
-</button>
+            <select id="category">
+                <option value="natur">🌲 Natur</option>
+                <option value="drinnen">🏠 Drinnen</option>
+                <option value="familie">👨‍👩‍👧‍👦 Familie</option>
+                <option value="einzel">🚶 Einzelperson</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>🌤 Wetter</label>
+
+            <select id="weather">
+                <option value="gut">☀️ Gut</option>
+                <option value="schlecht">🌧️ Schlecht</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="button-row">
+
+        <button
+            class="generate-btn"
+            onclick="generatePlan()">
+            Reiseplan erstellen
+        </button>
+
+        <button
+            class="pdf-btn"
+            onclick="window.print()">
+            📄 Als PDF speichern
+        </button>
+
+    </div>
 
 </div>
+
+<div class="lucerne-banner">
+    <h2>Highlights von Luzern</h2>
+
+    <div class="landmarks">
+        🌉 🦁 ⛰️ 🚂 🌊 🏰 🚤
+    </div>
+</div>
+
+<div id="summary" class="summary"></div>
 
 <div id="output"></div>
 
-</div>
-
 <footer>
-Made with ❤️ for Luzern Visitors
+    🌉 Kapellbrücke • 🌊 Vierwaldstättersee • ⛰️ Pilatus • 🏰 Museggmauer
 </footer>
 
 <script>
 
-const plans = {
+/* Teil 2 enthält die komplette Datenbank
+   mit Sehenswürdigkeiten und die Logik */
 
-natur_gut: [
+const tours = {
+
+natur: [
+
 [
 {
 time:"09:00",
-name:"🌉 Kapellbrücke",
-info:"Berühmteste Brücke der Schweiz",
+icon:"🌉",
+name:"Kapellbrücke",
+info:"Die bekannteste Holzbrücke der Schweiz.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"Start im Stadtzentrum"
+route:"Start beim Bahnhof Luzern"
 },
 {
 time:"11:00",
-name:"🌊 Vierwaldstättersee",
-info:"Spaziergang entlang der Seepromenade",
+icon:"🌊",
+name:"Vierwaldstättersee",
+info:"Spaziergang entlang der Seepromenade.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"10 Minuten von Kapellbrücke"
+route:"5 Minuten von der Kapellbrücke"
 },
 {
 time:"14:00",
-name:"⛰️ Pilatus",
-info:"Panorama und Wanderwege",
+icon:"⛰️",
+name:"Pilatus",
+info:"Atemberaubendes Bergpanorama.",
 price:"CHF 78",
 transport:"Bus + Zahnradbahn",
-way:"Ab Bahnhof Luzern"
+route:"Ab Bahnhof Luzern"
 },
 {
 time:"18:00",
-name:"🍽️ Abendessen am See",
-info:"Regionale Küche",
+icon:"🍽️",
+name:"Abendessen am See",
+info:"Regionale Spezialitäten mit Aussicht.",
 price:"CHF 30",
 transport:"Bus",
-way:"Rückkehr nach Luzern"
+route:"Rückfahrt nach Luzern"
 }
 ],
+
 [
 {
 time:"09:00",
-name:"🏰 Museggmauer",
-info:"Historische Stadtmauer",
+icon:"🏰",
+name:"Museggmauer",
+info:"Historische Stadtmauer mit Türmen.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"Altstadt"
+route:"Altstadt Luzern"
+},
+{
+time:"11:30",
+icon:"🌲",
+name:"Rotsee",
+info:"Beliebtes Naherholungsgebiet.",
+price:"Gratis",
+transport:"Bus",
+route:"15 Minuten ab Zentrum"
+},
+{
+time:"14:00",
+icon:"🚤",
+name:"Schiffsrundfahrt",
+info:"Rundfahrt auf dem Vierwaldstättersee.",
+price:"CHF 35",
+transport:"Schiff",
+route:"Bahnhofquai"
+},
+{
+time:"18:30",
+icon:"🌅",
+name:"Ufschötti",
+info:"Perfekter Ort für den Sonnenuntergang.",
+price:"Gratis",
+transport:"Bus",
+route:"Seeufer Luzern"
+}
+],
+
+[
+{
+time:"09:00",
+icon:"⛰️",
+name:"Rigi",
+info:"Die Königin der Berge.",
+price:"CHF 72",
+transport:"Zug + Bergbahn",
+route:"Ab Bahnhof Luzern"
 },
 {
 time:"12:00",
-name:"🌲 Rotsee",
-info:"Natur und Ruhe",
+icon:"🥾",
+name:"Panoramaweg",
+info:"Wandern mit Aussicht.",
 price:"Gratis",
-transport:"Bus",
-way:"15 Minuten"
+transport:"Zu Fuss",
+route:"Rigi Kulm"
 },
 {
 time:"15:00",
-name:"🚤 Schiffsrundfahrt",
-info:"See entdecken",
-price:"CHF 35",
+icon:"🚤",
+name:"Rückfahrt per Schiff",
+info:"Panoramafahrt zurück nach Luzern.",
+price:"Im Ticket enthalten",
 transport:"Schiff",
-way:"Ab Luzern Bahnhof"
+route:"Vitznau → Luzern"
+},
+{
+time:"18:00",
+icon:"☕",
+name:"Kaffee am See",
+info:"Entspannte Atmosphäre.",
+price:"CHF 8",
+transport:"Zu Fuss",
+route:"Seepromenade"
 }
 ]
+
 ],
 
-familie_gut:[
+drinnen:[
+
 [
 {
 time:"09:00",
-name:"🚂 Verkehrshaus",
-info:"Interaktive Ausstellungen",
+icon:"🚂",
+name:"Verkehrshaus",
+info:"Grösstes Verkehrsmuseum der Schweiz.",
 price:"CHF 35",
 transport:"Bus 6",
-way:"Ab Bahnhof"
+route:"Bahnhof → Verkehrshaus"
+},
+{
+time:"12:30",
+icon:"🍴",
+name:"Mittagessen",
+info:"Restaurant beim Verkehrshaus.",
+price:"CHF 25",
+transport:"Zu Fuss",
+route:"Vor Ort"
+},
+{
+time:"14:00",
+icon:"🎨",
+name:"Kunstmuseum Luzern",
+info:"Moderne und klassische Kunst.",
+price:"CHF 15",
+transport:"Bus",
+route:"KKL Luzern"
+},
+{
+time:"17:00",
+icon:"☕",
+name:"Café Altstadt",
+info:"Gemütliche Pause.",
+price:"CHF 8",
+transport:"Zu Fuss",
+route:"Altstadt"
+}
+],
+
+[
+{
+time:"09:00",
+icon:"🏛️",
+name:"Historisches Museum",
+info:"Geschichte der Region Luzern.",
+price:"CHF 15",
+transport:"Bus",
+route:"Pfistergasse"
+},
+{
+time:"12:00",
+icon:"🍽️",
+name:"Mittagessen",
+info:"Schweizer Küche.",
+price:"CHF 25",
+transport:"Zu Fuss",
+route:"Altstadt"
+},
+{
+time:"14:00",
+icon:"🧊",
+name:"Gletschergarten",
+info:"Spuren der Eiszeit.",
+price:"CHF 22",
+transport:"Bus",
+route:"Denkmalstrasse"
+},
+{
+time:"16:30",
+icon:"🎭",
+name:"Bourbaki Panorama",
+info:"Riesiges Rundgemälde.",
+price:"CHF 15",
+transport:"Zu Fuss",
+route:"Neben Gletschergarten"
+}
+],
+
+[
+{
+time:"09:00",
+icon:"🎼",
+name:"KKL Luzern",
+info:"Architektonisches Wahrzeichen.",
+price:"CHF 10",
+transport:"Zu Fuss",
+route:"Bahnhof Luzern"
+},
+{
+time:"11:00",
+icon:"📚",
+name:"Zentralbibliothek",
+info:"Ruhiger Kulturort.",
+price:"Gratis",
+transport:"Bus",
+route:"Sempacherstrasse"
+},
+{
+time:"14:00",
+icon:"🖼️",
+name:"Rosengart Sammlung",
+info:"Werke von Picasso und Klee.",
+price:"CHF 20",
+transport:"Zu Fuss",
+route:"Pilatusstrasse"
+},
+{
+time:"17:00",
+icon:"☕",
+name:"Kaffeepause",
+info:"Gemütliches Café.",
+price:"CHF 8",
+transport:"Zu Fuss",
+route:"Innenstadt"
+}
+]
+
+],
+
+familie:[
+
+[
+{
+time:"09:00",
+icon:"🚂",
+name:"Verkehrshaus",
+info:"Interaktive Attraktionen für Kinder.",
+price:"CHF 35",
+transport:"Bus 6",
+route:"Ab Bahnhof"
 },
 {
 time:"13:00",
-name:"🌊 Seepromenade",
-info:"Familienfreundlicher Spaziergang",
-price:"Gratis",
-transport:"Zu Fuss",
-way:"Direkt am See"
+icon:"🚤",
+name:"Schiffsrundfahrt",
+info:"Familienfreundliche Rundfahrt.",
+price:"CHF 30",
+transport:"Schiff",
+route:"Bahnhofquai"
 },
 {
 time:"15:00",
-name:"🦁 Löwendenkmal",
-info:"Berühmtes Denkmal",
+icon:"🦁",
+name:"Löwendenkmal",
+info:"Berühmtes Denkmal.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"10 Minuten"
+route:"10 Minuten Fussweg"
+},
+{
+time:"18:00",
+icon:"🍦",
+name:"Glace am See",
+info:"Perfekter Tagesabschluss.",
+price:"CHF 5",
+transport:"Zu Fuss",
+route:"Seepromenade"
 }
-]
 ],
 
-einzel_gut:[
 [
 {
 time:"09:00",
-name:"🏰 Museggmauer",
-info:"Historische Türme",
+icon:"🦌",
+name:"Tierpark Goldau",
+info:"Tiere hautnah erleben.",
+price:"CHF 22",
+transport:"Zug",
+route:"Luzern → Goldau"
+},
+{
+time:"13:00",
+icon:"🍔",
+name:"Mittagessen",
+info:"Familienrestaurant.",
+price:"CHF 20",
+transport:"Zu Fuss",
+route:"Tierpark"
+},
+{
+time:"15:00",
+icon:"🏖️",
+name:"Strandbad",
+info:"Baden und Spielen.",
+price:"CHF 8",
+transport:"Bus",
+route:"Seeufer"
+},
+{
+time:"18:00",
+icon:"🌅",
+name:"Seepromenade",
+info:"Abendspaziergang.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"Altstadt"
+route:"Zentrum"
+}
+],
+
+[
+{
+time:"09:00",
+icon:"🚂",
+name:"Verkehrshaus Planetarium",
+info:"Weltraumerlebnis für Kinder.",
+price:"CHF 18",
+transport:"Bus",
+route:"Verkehrshaus"
 },
 {
 time:"12:00",
-name:"🦁 Löwendenkmal",
-info:"Historisches Monument",
-price:"Gratis",
+icon:"🍕",
+name:"Familienmittagessen",
+info:"Pizza und Pasta.",
+price:"CHF 20",
 transport:"Zu Fuss",
-way:"15 Minuten"
+route:"Nähe Zentrum"
 },
 {
 time:"14:00",
-name:"🌉 Kapellbrücke",
-info:"Fotospot",
+icon:"🌊",
+name:"Seeufer-Spielplatz",
+info:"Spielen direkt am Wasser.",
 price:"Gratis",
 transport:"Zu Fuss",
-way:"Innenstadt"
-}
-]
-],
-
-natur_schlecht:[
-[
-{
-time:"10:00",
-name:"🚂 Verkehrshaus",
-info:"Indoor Aktivitäten",
-price:"CHF 35",
-transport:"Bus",
-way:"Bahnhof"
+route:"Promenade"
 },
 {
-time:"14:00",
-name:"☕ Altstadt Café",
-info:"Entspannen",
-price:"CHF 10",
+time:"17:30",
+icon:"🍨",
+name:"Dessertpause",
+info:"Lokale Spezialitäten.",
+price:"CHF 6",
 transport:"Zu Fuss",
-way:"Altstadt"
+route:"Altstadt"
 }
 ]
+
 ],
 
-familie_schlecht:[
+einzel:[
+
 [
 {
 time:"09:00",
-name:"🚂 Verkehrshaus",
-info:"Perfekt für Kinder",
-price:"CHF 35",
-transport:"Bus",
-way:"Direkt erreichbar"
+icon:"🏰",
+name:"Museggmauer",
+info:"Historische Türme und Aussicht.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"Altstadt"
+},
+{
+time:"11:00",
+icon:"🦁",
+name:"Löwendenkmal",
+info:"Historisches Monument.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"15 Minuten"
 },
 {
 time:"14:00",
-name:"🎬 Kino",
-info:"Familienfilm",
-price:"CHF 18",
-transport:"Bus",
-way:"Innenstadt"
+icon:"🌉",
+name:"Kapellbrücke",
+info:"Perfekter Fotospot.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"Innenstadt"
+},
+{
+time:"18:00",
+icon:"🍺",
+name:"Altstadt",
+info:"Abendstimmung erleben.",
+price:"CHF 15",
+transport:"Zu Fuss",
+route:"Altstadt"
 }
-]
 ],
 
-einzel_schlecht:[
 [
 {
-time:"10:00",
-name:"🏛️ Historisches Museum",
-info:"Luzerner Geschichte",
-price:"CHF 15",
-transport:"Bus",
-way:"Zentrum"
+time:"09:00",
+icon:"☕",
+name:"Café am See",
+info:"Gemütlicher Start.",
+price:"CHF 8",
+transport:"Zu Fuss",
+route:"Seepromenade"
+},
+{
+time:"11:00",
+icon:"🌊",
+name:"Seepromenade",
+info:"Spaziergang entlang des Sees.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"Seeufer"
 },
 {
 time:"14:00",
-name:"☕ Café Besuch",
-info:"Lokale Spezialitäten",
-price:"CHF 10",
+icon:"🚤",
+name:"Schiffsfahrt",
+info:"Luzern vom Wasser aus entdecken.",
+price:"CHF 35",
+transport:"Schiff",
+route:"Bahnhofquai"
+},
+{
+time:"18:00",
+icon:"🌇",
+name:"Sonnenuntergang",
+info:"Fotografie und Aussicht.",
+price:"Gratis",
 transport:"Zu Fuss",
-way:"Altstadt"
+route:"Ufschötti"
+}
+],
+
+[
+{
+time:"09:00",
+icon:"📸",
+name:"Fototour Altstadt",
+info:"Historische Gebäude fotografieren.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"Altstadt"
+},
+{
+time:"12:00",
+icon:"🍽️",
+name:"Mittagessen",
+info:"Lokale Küche.",
+price:"CHF 25",
+transport:"Zu Fuss",
+route:"Zentrum"
+},
+{
+time:"14:00",
+icon:"🎨",
+name:"Rosengart Museum",
+info:"Picasso und Klee.",
+price:"CHF 20",
+transport:"Zu Fuss",
+route:"Pilatusstrasse"
+},
+{
+time:"18:00",
+icon:"🌉",
+name:"Abend an der Reuss",
+info:"Lichtstimmung geniessen.",
+price:"Gratis",
+transport:"Zu Fuss",
+route:"Kapellbrücke"
 }
 ]
+
 ]
 
 };
 
+/* Hilfsfunktion */
+
+function getWeatherAdjustedCategory(category, weather){
+
+    if(category === "natur" && weather === "schlecht"){
+        return "drinnen";
+    }
+
+    return category;
+}
+
+/* ==========================
+   REISEPLAN GENERIEREN
+========================== */
+
 function generatePlan(){
 
-const days = parseInt(document.getElementById("days").value);
-const category = document.getElementById("category").value;
-const weather = document.getElementById("weather").value;
+    const days =
+        parseInt(document.getElementById("days").value);
 
-const key = category + "_" + weather;
+    const category =
+        document.getElementById("category").value;
 
-const output = document.getElementById("output");
+    const weather =
+        document.getElementById("weather").value;
 
-output.innerHTML = "";
+    const output =
+        document.getElementById("output");
 
-for(let i=0;i<days;i++){
+    const summary =
+        document.getElementById("summary");
 
-const dayData = plans[key][i % plans[key].length];
+    output.innerHTML = "";
 
-let html = `
-<div class="day">
-<h2>📅 Tag ${i+1}</h2>
-`;
+    const selectedCategory =
+        getWeatherAdjustedCategory(
+            category,
+            weather
+        );
 
-dayData.forEach(item=>{
-html += `
-<div class="activity">
-<h4>${item.time} - ${item.name}</h4>
-<p><strong>Info:</strong> ${item.info}</p>
-<p><strong>Preis:</strong> ${item.price}</p>
-<p><strong>ÖV:</strong> ${item.transport}</p>
-<p><strong>Weg:</strong> ${item.way}</p>
-</div>
-`;
-});
+    const plans =
+        tours[selectedCategory];
 
-html += "</div>";
+    let totalActivities = 0;
+    let totalBudget = 0;
 
-output.innerHTML += html;
+    for(let day = 0; day < days; day++){
 
+        const currentPlan =
+            plans[day % plans.length];
+
+        let dayHTML = `
+        <div class="day-card">
+
+            <div class="day-header">
+                <h2>📅 Tag ${day + 1}</h2>
+            </div>
+
+            <div class="day-body">
+        `;
+
+        currentPlan.forEach(activity => {
+
+            totalActivities++;
+
+            const priceText = activity.price;
+
+            const match =
+                priceText.match(/(\d+)/);
+
+            if(match){
+                totalBudget +=
+                    parseInt(match[1]);
+            }
+
+            dayHTML += `
+
+            <div class="activity">
+
+                <div class="activity-title">
+                    ${activity.time}
+                    —
+                    ${activity.icon}
+                    ${activity.name}
+                </div>
+
+                <p>
+                    ${activity.info}
+                </p>
+
+                <div class="activity-grid">
+
+                    <div class="info-box">
+                        <strong>💰 Preis</strong><br>
+                        ${activity.price}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>🚍 ÖV</strong><br>
+                        ${activity.transport}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>🧭 Weg</strong><br>
+                        ${activity.route}
+                    </div>
+
+                </div>
+
+            </div>
+
+            `;
+        });
+
+        dayHTML += `
+            </div>
+        </div>
+        `;
+
+        output.innerHTML += dayHTML;
+    }
+
+    summary.style.display = "block";
+
+    summary.innerHTML = `
+
+    <div class="summary-card">
+
+        <h2>
+            📊 Reiseübersicht
+        </h2>
+
+        <div class="summary-grid">
+
+            <div class="stat">
+                <h3>📅 Tage</h3>
+                <p>${days}</p>
+            </div>
+
+            <div class="stat">
+                <h3>🎯 Kategorie</h3>
+                <p>
+                    ${selectedCategory.charAt(0).toUpperCase() +
+                      selectedCategory.slice(1)}
+                </p>
+            </div>
+
+            <div class="stat">
+                <h3>🌤 Wetter</h3>
+                <p>${weather}</p>
+            </div>
+
+            <div class="stat">
+                <h3>📍 Aktivitäten</h3>
+                <p>${totalActivities}</p>
+            </div>
+
+            <div class="stat">
+                <h3>💰 Budget</h3>
+                <p>ca. CHF ${totalBudget}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+    savePlan();
 }
 
+/* ==========================
+   LOCAL STORAGE
+========================== */
+
+function savePlan(){
+
+    localStorage.setItem(
+        "yourTourGuidePlan",
+        document.getElementById("output").innerHTML
+    );
+
+    localStorage.setItem(
+        "yourTourGuideSummary",
+        document.getElementById("summary").innerHTML
+    );
 }
+
+/* ==========================
+   PLAN LADEN
+========================== */
+
+function loadSavedPlan(){
+
+    const savedPlan =
+        localStorage.getItem(
+            "yourTourGuidePlan"
+        );
+
+    const savedSummary =
+        localStorage.getItem(
+            "yourTourGuideSummary"
+        );
+
+    if(savedPlan){
+
+        document.getElementById(
+            "output"
+        ).innerHTML = savedPlan;
+
+        document.getElementById(
+            "summary"
+        ).style.display = "block";
+
+        document.getElementById(
+            "summary"
+        ).innerHTML = savedSummary;
+    }
+}
+
+/* ==========================
+   BEIM START LADEN
+========================== */
+
+window.onload = function(){
+
+    loadSavedPlan();
+
+};
+
+/* ==========================
+   ENDE SCRIPT
+========================== */
 
 </script>
 
