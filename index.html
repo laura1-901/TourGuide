@@ -2,38 +2,33 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>YourTourGuide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourTourGuide Luzern</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Segoe UI,sans-serif;
+font-family:Arial,sans-serif;
 }
 
 body{
-background:#f5f7fb;
+background:#f5f7fa;
 color:#333;
 }
 
 header{
-background:linear-gradient(135deg,#1e3a5f,#3569a8);
+background:linear-gradient(135deg,#0077b6,#00b4d8);
 color:white;
 padding:30px;
 text-align:center;
-box-shadow:0 4px 10px rgba(0,0,0,0.15);
+box-shadow:0 3px 10px rgba(0,0,0,0.2);
 }
 
 header h1{
-font-size:2.2rem;
-}
-
-header p{
-margin-top:10px;
+font-size:2.5rem;
+margin-bottom:10px;
 }
 
 .container{
@@ -46,122 +41,94 @@ padding:20px;
 background:white;
 padding:20px;
 border-radius:15px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
 margin-bottom:20px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
 label{
 display:block;
-margin-bottom:8px;
+margin-top:15px;
 font-weight:bold;
 }
 
 select{
 width:100%;
-padding:12px;
+padding:10px;
+margin-top:5px;
 border-radius:8px;
 border:1px solid #ccc;
-margin-bottom:15px;
 }
 
 button{
+margin-top:20px;
 padding:12px 20px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 cursor:pointer;
-font-size:1rem;
-margin-right:10px;
+font-size:16px;
 }
 
-.primary{
-background:#1e3a5f;
+.generate{
+background:#0096c7;
 color:white;
 }
 
-.primary:hover{
-background:#294f80;
-}
-
-.secondary{
-background:#f4b400;
-color:black;
-}
-
-.secondary:hover{
-background:#d89c00;
+.pdf{
+background:#38b000;
+color:white;
+margin-left:10px;
 }
 
 .day{
-margin-top:30px;
-}
-
-.day h2{
-margin-bottom:15px;
-color:#1e3a5f;
-border-bottom:3px solid #f4b400;
-padding-bottom:8px;
+margin-top:25px;
+padding:20px;
+background:#eef8ff;
+border-left:6px solid #0096c7;
+border-radius:10px;
 }
 
 .activity{
-background:white;
-padding:15px;
-border-left:5px solid #1e3a5f;
-border-radius:10px;
-margin-bottom:15px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-.activity h3{
-margin-bottom:10px;
-}
-
-.info{
-margin-top:5px;
-}
-
-.route{
-background:#eef5ff;
-padding:10px;
-border-radius:8px;
 margin-top:10px;
+padding:12px;
+background:white;
+border-radius:8px;
+}
+
+.activity h4{
+color:#0077b6;
+margin-bottom:5px;
 }
 
 footer{
 text-align:center;
 padding:20px;
-margin-top:30px;
 color:#666;
 }
 
-@media(max-width:768px){
-
-header h1{
-font-size:1.8rem;
+@media print{
+button,
+header{
+display:none;
 }
 
-button{
-width:100%;
-margin-bottom:10px;
+body{
+background:white;
 }
-
 }
-
 </style>
 </head>
-
 <body>
 
 <header>
-<h1>🏔️ YourTourGuide</h1>
-<p>Dein persönlicher Reiseplan für Luzern</p>
+<h1>🧭 YourTourGuide</h1>
+<p>Plane deinen perfekten Aufenthalt in Luzern</p>
 </header>
 
 <div class="container">
 
 <div class="card">
 
-<label>Anzahl Aufenthaltstage</label>
-
+<label>Anzahl Tage</label>
 <select id="days">
 <option value="1">1 Tag</option>
 <option value="2">2 Tage</option>
@@ -170,12 +137,25 @@ margin-bottom:10px;
 <option value="5">5 Tage</option>
 </select>
 
-<button class="primary" onclick="generatePlan()">
-✨ Reiseplan erstellen
+<label>Kategorie</label>
+<select id="category">
+<option value="natur">🌲 Natur</option>
+<option value="familie">👨‍👩‍👧‍👦 Familie</option>
+<option value="einzel">🚶 Einzelperson</option>
+</select>
+
+<label>Wetter</label>
+<select id="weather">
+<option value="gut">☀️ Gut</option>
+<option value="schlecht">🌧️ Schlecht</option>
+</select>
+
+<button class="generate" onclick="generatePlan()">
+Reiseplan erstellen
 </button>
 
-<button class="secondary" onclick="downloadPDF()">
-📄 Als PDF speichern
+<button class="pdf" onclick="window.print()">
+📄 PDF herunterladen
 </button>
 
 </div>
@@ -185,203 +165,239 @@ margin-bottom:10px;
 </div>
 
 <footer>
-🚢 Entdecke Luzern mit YourTourGuide
+Made with ❤️ for Luzern Visitors
 </footer>
 
 <script>
 
-const plans = [
+const plans = {
 
+natur_gut: [
 [
 {
-emoji:"🌉",
-name:"Kapellbrücke",
 time:"09:00",
+name:"🌉 Kapellbrücke",
+info:"Berühmteste Brücke der Schweiz",
 price:"Gratis",
-transport:"🚶 Zu Fuss",
-route:"Hotel → Kapellbrücke (10 Min)",
-info:"Das Wahrzeichen von Luzern."
+transport:"Zu Fuss",
+way:"Start im Stadtzentrum"
 },
 {
-emoji:"🏛️",
-name:"Altstadt",
 time:"11:00",
+name:"🌊 Vierwaldstättersee",
+info:"Spaziergang entlang der Seepromenade",
 price:"Gratis",
-transport:"🚶 Zu Fuss",
-route:"Kapellbrücke → Altstadt (5 Min)",
-info:"Historische Gassen und Plätze."
+transport:"Zu Fuss",
+way:"10 Minuten von Kapellbrücke"
 },
 {
-emoji:"🦁",
-name:"Löwendenkmal",
 time:"14:00",
-price:"Gratis",
-transport:"🚌 Bus Nr. 1",
-route:"Altstadt → Löwendenkmal (10 Min)",
-info:"Eines der bekanntesten Denkmäler der Schweiz."
-},
-{
-emoji:"❄️",
-name:"Gletschergarten",
-time:"16:00",
-price:"CHF 22",
-transport:"🚶 2 Min",
-route:"Löwendenkmal → Gletschergarten",
-info:"Spannende Eiszeitgeschichte."
-}
-],
-
-[
-{
-emoji:"🚂",
-name:"Verkehrshaus",
-time:"09:00",
-price:"CHF 35",
-transport:"🚌 Bus Nr. 6",
-route:"Hotel → Verkehrshaus",
-info:"Das meistbesuchte Museum der Schweiz."
-},
-{
-emoji:"🏖️",
-name:"Lido Luzern",
-time:"13:00",
-price:"CHF 8",
-transport:"🚶 5 Min",
-route:"Verkehrshaus → Lido",
-info:"Badespass direkt am See."
-},
-{
-emoji:"🚢",
-name:"Schifffahrt",
-time:"16:00",
-price:"CHF 30",
-transport:"🚢 Schiff",
-route:"Lido → Schiffstation",
-info:"Rundfahrt auf dem Vierwaldstättersee."
-}
-],
-
-[
-{
-emoji:"🏔️",
-name:"Pilatus",
-time:"09:00",
+name:"⛰️ Pilatus",
+info:"Panorama und Wanderwege",
 price:"CHF 78",
-transport:"🚞 Zahnradbahn",
-route:"Luzern → Pilatus",
-info:"Atemberaubende Aussicht."
+transport:"Bus + Zahnradbahn",
+way:"Ab Bahnhof Luzern"
 },
 {
-emoji:"🌲",
-name:"Fräkmüntegg",
-time:"14:00",
-price:"Gratis",
-transport:"🚡 Seilbahn",
-route:"Pilatus → Fräkmüntegg",
-info:"Natur und Abenteuer."
+time:"18:00",
+name:"🍽️ Abendessen am See",
+info:"Regionale Küche",
+price:"CHF 30",
+transport:"Bus",
+way:"Rückkehr nach Luzern"
 }
 ],
-
 [
 {
-emoji:"⛰️",
-name:"Rigi",
 time:"09:00",
-price:"CHF 72",
-transport:"🚆 Bahn + 🚢 Schiff",
-route:"Luzern → Vitznau → Rigi",
-info:"Die Königin der Berge."
+name:"🏰 Museggmauer",
+info:"Historische Stadtmauer",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"Altstadt"
 },
 {
-emoji:"🏘️",
-name:"Vitznau",
-time:"15:00",
-price:"Gratis",
-transport:"🚶",
-route:"Rigi → Vitznau",
-info:"Charmantes Dorf am See."
-}
-],
-
-[
-{
-emoji:"🏰",
-name:"Museggmauer",
-time:"09:00",
-price:"Gratis",
-transport:"🚶",
-route:"Hotel → Museggmauer",
-info:"Historische Stadtmauer."
-},
-{
-emoji:"🎨",
-name:"Rosengart Collection",
 time:"12:00",
-price:"CHF 20",
-transport:"🚌 Bus Nr. 2",
-route:"Museggmauer → Rosengart",
-info:"Werke von Picasso und Klee."
+name:"🌲 Rotsee",
+info:"Natur und Ruhe",
+price:"Gratis",
+transport:"Bus",
+way:"15 Minuten"
 },
 {
-emoji:"🛍️",
-name:"Shopping Altstadt",
 time:"15:00",
-price:"Individuell",
-transport:"🚶",
-route:"Rosengart → Altstadt",
-info:"Souvenirs und Schweizer Spezialitäten."
+name:"🚤 Schiffsrundfahrt",
+info:"See entdecken",
+price:"CHF 35",
+transport:"Schiff",
+way:"Ab Luzern Bahnhof"
 }
 ]
+],
 
-];
+familie_gut:[
+[
+{
+time:"09:00",
+name:"🚂 Verkehrshaus",
+info:"Interaktive Ausstellungen",
+price:"CHF 35",
+transport:"Bus 6",
+way:"Ab Bahnhof"
+},
+{
+time:"13:00",
+name:"🌊 Seepromenade",
+info:"Familienfreundlicher Spaziergang",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"Direkt am See"
+},
+{
+time:"15:00",
+name:"🦁 Löwendenkmal",
+info:"Berühmtes Denkmal",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"10 Minuten"
+}
+]
+],
+
+einzel_gut:[
+[
+{
+time:"09:00",
+name:"🏰 Museggmauer",
+info:"Historische Türme",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"Altstadt"
+},
+{
+time:"12:00",
+name:"🦁 Löwendenkmal",
+info:"Historisches Monument",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"15 Minuten"
+},
+{
+time:"14:00",
+name:"🌉 Kapellbrücke",
+info:"Fotospot",
+price:"Gratis",
+transport:"Zu Fuss",
+way:"Innenstadt"
+}
+]
+],
+
+natur_schlecht:[
+[
+{
+time:"10:00",
+name:"🚂 Verkehrshaus",
+info:"Indoor Aktivitäten",
+price:"CHF 35",
+transport:"Bus",
+way:"Bahnhof"
+},
+{
+time:"14:00",
+name:"☕ Altstadt Café",
+info:"Entspannen",
+price:"CHF 10",
+transport:"Zu Fuss",
+way:"Altstadt"
+}
+]
+],
+
+familie_schlecht:[
+[
+{
+time:"09:00",
+name:"🚂 Verkehrshaus",
+info:"Perfekt für Kinder",
+price:"CHF 35",
+transport:"Bus",
+way:"Direkt erreichbar"
+},
+{
+time:"14:00",
+name:"🎬 Kino",
+info:"Familienfilm",
+price:"CHF 18",
+transport:"Bus",
+way:"Innenstadt"
+}
+]
+],
+
+einzel_schlecht:[
+[
+{
+time:"10:00",
+name:"🏛️ Historisches Museum",
+info:"Luzerner Geschichte",
+price:"CHF 15",
+transport:"Bus",
+way:"Zentrum"
+},
+{
+time:"14:00",
+name:"☕ Café Besuch",
+info:"Lokale Spezialitäten",
+price:"CHF 10",
+transport:"Zu Fuss",
+way:"Altstadt"
+}
+]
+]
+
+};
 
 function generatePlan(){
 
-const days = Number(document.getElementById("days").value);
+const days = parseInt(document.getElementById("days").value);
+const category = document.getElementById("category").value;
+const weather = document.getElementById("weather").value;
 
-let html = "";
+const key = category + "_" + weather;
 
-for(let d=0; d<days; d++){
+const output = document.getElementById("output");
 
-html += `<div class="day">
-<h2>📅 Tag ${d+1}</h2>`;
+output.innerHTML = "";
 
-plans[d].forEach(place=>{
+for(let i=0;i<days;i++){
 
-html += `
-<div class="activity">
+const dayData = plans[key][i % plans[key].length];
 
-<h3>${place.emoji} ${place.name}</h3>
-
-<div class="info">🕒 ${place.time}</div>
-<div class="info">💰 ${place.price}</div>
-<div class="info">${place.transport}</div>
-
-<p style="margin-top:10px;">
-${place.info}
-</p>
-
-<div class="route">
-📍 Route: ${place.route}
-</div>
-
-</div>
+let html = `
+<div class="day">
+<h2>📅 Tag ${i+1}</h2>
 `;
 
+dayData.forEach(item=>{
+html += `
+<div class="activity">
+<h4>${item.time} - ${item.name}</h4>
+<p><strong>Info:</strong> ${item.info}</p>
+<p><strong>Preis:</strong> ${item.price}</p>
+<p><strong>ÖV:</strong> ${item.transport}</p>
+<p><strong>Weg:</strong> ${item.way}</p>
+</div>
+`;
 });
 
-html += `</div>`;
+html += "</div>";
+
+output.innerHTML += html;
+
 }
 
-document.getElementById("output").innerHTML = html;
-
 }
-
-function downloadPDF(){
-window.print();
-}
-
-generatePlan();
 
 </script>
 
